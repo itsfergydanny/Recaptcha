@@ -1,0 +1,47 @@
+# Configure your MySQL settings
+mysql:
+  ip: '127.0.0.1'
+  port: '3306'
+  user: 'user'
+  pass: 'pass'
+  database: 'Recaptcha'
+  connections: 2
+
+# Configure the url where you will have your captcha script/website. Please note that additional parameters
+# will be added once it generates a unique code for the player. For example example.com will turn into example.com/?user=uuid&&?code=code
+# If it ends in .php make sure to not add the trailing / at the end. If its a regular url like example.com, make sure to add a / at the end
+url: 'http://captcha.example.com/'
+
+# Configure the message the players get
+message:
+  - '&c&lSTOP'
+  - '&cBefore playing this server you need to'
+  - '&ccomplete a captcha. Do so by going to'
+  - ' '
+  - '&e{url}'
+  - ' '
+  - '&aOnce completed, you can begin playing!'
+
+# Configure a message delay (if you want to be sure its the last message people see in chat). In ticks (20 ticks = 1 second)
+message-delay: 20
+
+# How often should the plugin cycle thru players pending validation? this means 1 mysql request per set time. In ticks (20 ticks = 1 second)
+validation-cycle-time: 60
+
+# Enable or disable some protections for when players are not validated. Please note I can't block bungee commands from a spigot plugin
+prevent-moving: true
+prevent-talking: true
+prevent-using-commands: true
+prevent-interactions: true
+prevent-inventory-open: true
+prevent-inventory-click: true
+
+# Set the success message
+success-message: '&aCongrats on passing the captcha! You may now play!'
+
+# Set the warning message if they try doing something they cant while not validated. Multiline supported and you can use the {url} placeholder here too!
+deny-message:
+  - ' '
+  - '&cSorry, you can''t do that until you pass the following captcha:'
+  - '&e{url}'
+  - ' '

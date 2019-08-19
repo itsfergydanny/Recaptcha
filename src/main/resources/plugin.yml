@@ -1,0 +1,7 @@
+name: Recaptcha
+version: ${project.version}
+main: com.dnyferguson.recaptcha.Recaptcha
+authors: [fergydanny]
+description: An in-game anti-bot captcha system using google recaptcha
+commands:
+  recaptcha:
