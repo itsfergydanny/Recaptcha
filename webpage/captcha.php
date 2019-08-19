@@ -1,17 +1,17 @@
 <?php
-$host = "localhost";
+$host     = "localhost";
 $username = "x";
 $password = "x";
 $database = "Recaptcha";
-$mysqli = new mysqli($host, $username, $password, $database);
+$mysqli   = new mysqli($host, $username, $password, $database);
 
-// Google recaptcha keys (make sure to use recaptcha v2)
+// Google recaptcha keys
 $site_key = "x";
-$secret = "x";
+$secret   = "x";
 
-// Dont touch anything below
+// Dont touch these
 $expectedCode = "";
-$code = $_GET['code'];
+$code         = $_GET['code'];
 
 $query = "SELECT * FROM `users` WHERE `code` = '$code' AND `passed` = '0'";
 
@@ -70,21 +70,21 @@ echo "
 	</style>
 </html>
 ";
- 
+
 // grab expected code from database
 if ($result = $mysqli->query($query)) {
- 
+    
     while ($row = $result->fetch_assoc()) {
         $expectedCode = $row["code"];
     }
-$result->free();
+    $result->free();
 }
 
 // if code in url doesn't match expected code, give error instead of captcha
 if ($code != $expectedCode) {
-	echo '<h3>Error: The code provided in your url is not marked as pending.</h3>';
+    echo '<h3>Error: The code provided in your url is not marked as pending.</h3>';
 } else {
-	echo "
+    echo "
 	<form action=\"\" method=\"post\">
 		<div class=\"g-recaptcha\" data-sitekey=\"$site_key\"></div>
 		<input type=\"submit\"/>
@@ -94,18 +94,17 @@ if ($code != $expectedCode) {
 }
 
 // handle recaptcha response
-if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response']))
-  {
-        $verifyResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret.'&response='.$_POST['g-recaptcha-response']);
-        $responseData = json_decode($verifyResponse);
-        if($responseData->success) {
-			$query = "UPDATE `users` SET `passed`='1',`completion_time`=CURRENT_TIMESTAMP WHERE `code` = '$code'";
-			$mysqli->query("$query");
-			$mysqli->close();
-            echo "<div><h3 class=\"success\">Success, return in-game!</h3></div>";
-        }
-        else {
-            echo "<div><h3 class=\"failed\">Captcha failed, please try again!</h3></div>";
-        }
-   }
+if (isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])) {
+    $verifyResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret . '&response=' . $_POST['g-recaptcha-response']);
+    $responseData   = json_decode($verifyResponse);
+    if ($responseData->success) {
+        $query = "UPDATE `users` SET `passed`='1',`completion_time`=CURRENT_TIMESTAMP WHERE `code` = '$code'";
+        $mysqli->query("$query");
+        $mysqli->close();
+        header("Location: /complete.php");
+        exit;
+    } else {
+        echo "<div><h3 class=\"failed\">Captcha failed, please try again!</h3></div>";
+    }
+}
 ?>
