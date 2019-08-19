@@ -38,9 +38,7 @@ public class CheckPending {
                                 passed(uuid);
                             }
                         }
-                    } catch (SQLException ignore) {
-                        passed(uuid);
-                    }
+                    } catch (SQLException ignore) {}
                 } else {
                     iterator = plugin.getNotPassed().iterator();
                 }

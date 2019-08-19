@@ -9,7 +9,13 @@ $mysqli   = new mysqli($host, $username, $password, $database);
 $site_key = "x";
 $secret   = "x";
 
-// Dont touch these
+// Url to how-to guide (if you have one). Make sure to use http:// or https:// at the start. Leaving this as "" will remove the button.
+$howto = "";
+
+/* 
+	DO NOT TOUCH ANYTHING BELOW THIS LINE IF YOU DONT WANT TO BREAK STUFF
+*/
+
 $expectedCode = "";
 $code         = $_GET['code'];
 
@@ -89,8 +95,10 @@ if ($code != $expectedCode) {
 		<div class=\"g-recaptcha\" data-sitekey=\"$site_key\"></div>
 		<input type=\"submit\"/>
 	</form>
-	<a href=\"#\">How-to?</a>
 	";
+	if ($howto != "") {
+		echo "<a href=\"$howto\" target=\"_blank\">How-to?</a>";
+	}
 }
 
 // handle recaptcha response
