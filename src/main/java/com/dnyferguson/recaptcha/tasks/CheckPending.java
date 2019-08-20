@@ -18,7 +18,7 @@ public class CheckPending {
     private String success;
 
     public CheckPending(Recaptcha plugin) {
-        long time = plugin.getConfig().getLong("validation-cycle-time");
+        int time = plugin.getConfig().getInt("validation-cycle-time");
         iterator = plugin.getNotPassed().iterator();
         success = plugin.getConfig().getString("success-message");
         plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
@@ -42,10 +42,12 @@ public class CheckPending {
                                 ResultSet rs = pst.executeQuery();
                                 if (rs.next()) {
                                     boolean passed = rs.getBoolean("passed");
+                                    String ign = rs.getString("ign");
                                     if (passed) {
                                         plugin.getNotPassed().remove(uuid);
                                         plugin.getUrls().remove(uuid);
                                         player.sendMessage(Utils.color(success));
+                                        System.out.println("[Recaptcha] user " + ign + " has passed their captcha! They can now play!");
                                     }
                                 }
                             } catch (SQLException ignore) {}
@@ -55,6 +57,6 @@ public class CheckPending {
                     iterator = plugin.getNotPassed().iterator();
                 }
             }
-        }, 20, time);
+        }, 0, time);
     }
 }

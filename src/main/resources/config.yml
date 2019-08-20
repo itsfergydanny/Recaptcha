@@ -28,7 +28,7 @@ message:
 message-delay: 40
 
 # How often should the plugin cycle thru players pending validation? this means 1 mysql request per set time. In ticks (20 ticks = 1 second)
-validation-cycle-time: 60
+validation-cycle-time: 40
 
 # Enable or disable some protections for when players are not validated. Please note I can't block bungee commands from a spigot plugin
 prevent-moving: true
