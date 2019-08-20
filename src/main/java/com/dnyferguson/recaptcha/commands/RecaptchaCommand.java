@@ -69,7 +69,7 @@ public class RecaptchaCommand implements CommandExecutor {
                     public void run() {
                         try (Connection con = plugin.getSql().getDs().getConnection()) {
                             String type = getType(args[1]);
-                            PreparedStatement pst = con.prepareStatement("UPDATE `users` SET `passed`='0' WHERE `" + type + "` = '" + args[1] + "'");
+                            PreparedStatement pst = con.prepareStatement("UPDATE `users` SET `passed`='0', `code`='" + Utils.generateCode() + "' WHERE `" + type + "` = '" + args[1] + "'");
                             pst.execute();
                             sender.sendMessage(Utils.color("&aYou have successfully invalidated the following user: " + args[1]));
                         } catch (SQLException e) {

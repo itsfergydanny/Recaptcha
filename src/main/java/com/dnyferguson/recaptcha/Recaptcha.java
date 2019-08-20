@@ -5,10 +5,15 @@ import com.dnyferguson.recaptcha.listeners.*;
 import com.dnyferguson.recaptcha.mysql.MySQL;
 import com.dnyferguson.recaptcha.tasks.CheckPending;
 import com.dnyferguson.recaptcha.utils.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class Recaptcha extends JavaPlugin {
@@ -18,6 +23,7 @@ public final class Recaptcha extends JavaPlugin {
     private MySQL sql;
     private CheckPending pendingCheck;
     private String denyMessage;
+    private LoginListener login;
 
     @Override
     public void onEnable() {
@@ -32,7 +38,7 @@ public final class Recaptcha extends JavaPlugin {
         denyMessage = message.toString();
 
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new LoginListener(this), this);
+        pm.registerEvents(login = new LoginListener(this), this);
         pm.registerEvents(new ChatListener(this), this);
         pm.registerEvents(new CommandListener(this), this);
         pm.registerEvents(new InteractionListener(this), this);
@@ -43,6 +49,10 @@ public final class Recaptcha extends JavaPlugin {
         pendingCheck = new CheckPending(this);
 
         getCommand("recaptcha").setExecutor(new RecaptchaCommand(this));
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            login.check(player);
+        }
     }
 
     @Override

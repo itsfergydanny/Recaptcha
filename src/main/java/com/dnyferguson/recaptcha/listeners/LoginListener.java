@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Random;
 
 public class LoginListener implements Listener {
 
@@ -37,54 +36,45 @@ public class LoginListener implements Listener {
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent e) {
         Player player = e.getPlayer();
-        String uuid = player.getUniqueId().toString();
-
-        if (!plugin.getNotPassed().contains(player.getUniqueId())) {
-            plugin.getNotPassed().add(player.getUniqueId());
-        }
-
         plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                try (Connection con = plugin.getSql().getDs().getConnection()) {
-                    PreparedStatement pst = con.prepareStatement("SELECT * FROM `users` WHERE `uuid` = '" + uuid + "'");
-                    ResultSet rs = pst.executeQuery();
-                    if (rs.next()) {
-                        boolean passed = rs.getBoolean("passed");
-                        String code = rs.getString("code");
-                        String fullUrl = url + "?code=" + code;
-                        if (passed) {
-                            plugin.getNotPassed().remove(player.getUniqueId());
-                            return;
-                        }
-                        plugin.getUrls().put(player.getUniqueId(), fullUrl);
-                        player.sendMessage(message.replace("{url}", url + "?code=" + code));
-                        return;
-                    }
-
-                    int leftLimit = 97; // letter 'a'
-                    int rightLimit = 122; // letter 'z'
-                    int targetStringLength = 12;
-                    Random random = new Random();
-                    StringBuilder buffer = new StringBuilder(targetStringLength);
-                    for (int i = 0; i < targetStringLength; i++) {
-                        int randomLimitedInt = leftLimit + (int)
-                                (random.nextFloat() * (rightLimit - leftLimit + 1));
-                        buffer.append((char) randomLimitedInt);
-                    }
-
-                    String code = buffer.toString();
-                    String fullUrl = url + "?code=" + code;
-                    plugin.getUrls().put(player.getUniqueId(), fullUrl);
-
-                    pst = con.prepareStatement("INSERT INTO `users` (`id`, `ign`, `uuid`, `passed`, `code`, `completion_time`) VALUES " +
-                            "(NULL, '" + player.getName() + "', '" + uuid + "', '0', '" + code + "', NULL)");
-                    pst.execute();
-                    player.sendMessage(message.replace("{url}", fullUrl));
-                } catch (SQLException ignore) {
-                    plugin.getNotPassed().remove(player.getUniqueId());
-                }
+                check(player);
             }
         }, delay);
+    }
+
+    public void check(Player player) {
+        String uuid = player.getUniqueId().toString();
+        try (Connection con = plugin.getSql().getDs().getConnection()) {
+            PreparedStatement pst = con.prepareStatement("SELECT * FROM `users` WHERE `uuid` = '" + uuid + "'");
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                boolean passed = rs.getBoolean("passed");
+                String code = rs.getString("code");
+                String fullUrl = url + "?code=" + code;
+                if (passed) {
+                    return;
+                }
+                if (!plugin.getNotPassed().contains(player.getUniqueId())) {
+                    plugin.getNotPassed().add(player.getUniqueId());
+                }
+                plugin.getUrls().put(player.getUniqueId(), fullUrl);
+                player.sendMessage(message.replace("{url}", url + "?code=" + code));
+                System.out.println("[Recaptcha] generated captcha for new user " + player.getName() + ".");
+                return;
+            }
+
+            String code = Utils.generateCode();
+            String fullUrl = url + "?code=" + code;
+            plugin.getUrls().put(player.getUniqueId(), fullUrl);
+
+            pst = con.prepareStatement("INSERT INTO `users` (`id`, `ign`, `uuid`, `passed`, `code`, `completion_time`) VALUES " +
+                    "(NULL, '" + player.getName() + "', '" + uuid + "', '0', '" + code + "', NULL)");
+            pst.execute();
+            player.sendMessage(message.replace("{url}", fullUrl));
+        } catch (SQLException ignore) {
+            plugin.getNotPassed().remove(player.getUniqueId());
+        }
     }
 }
