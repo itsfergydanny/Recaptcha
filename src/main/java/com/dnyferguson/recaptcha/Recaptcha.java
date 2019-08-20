@@ -9,10 +9,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class Recaptcha extends JavaPlugin {
 
-    private Set<UUID> notPassed = new HashSet<>();
+    private List<UUID> notPassed = new CopyOnWriteArrayList<>();
     private Map<UUID, String> urls = new HashMap<>();
     private MySQL sql;
     private CheckPending pendingCheck;
@@ -32,7 +33,6 @@ public final class Recaptcha extends JavaPlugin {
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new LoginListener(this), this);
-        pm.registerEvents(new LogoutListener(this), this);
         pm.registerEvents(new ChatListener(this), this);
         pm.registerEvents(new CommandListener(this), this);
         pm.registerEvents(new InteractionListener(this), this);
@@ -53,7 +53,7 @@ public final class Recaptcha extends JavaPlugin {
         }
     }
 
-    public Set<UUID> getNotPassed() {
+    public List<UUID> getNotPassed() {
         return notPassed;
     }
 

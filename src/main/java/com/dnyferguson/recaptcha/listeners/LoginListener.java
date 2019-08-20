@@ -38,7 +38,10 @@ public class LoginListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent e) {
         Player player = e.getPlayer();
         String uuid = player.getUniqueId().toString();
-        plugin.getNotPassed().add(player.getUniqueId());
+
+        if (!plugin.getNotPassed().contains(player.getUniqueId())) {
+            plugin.getNotPassed().add(player.getUniqueId());
+        }
 
         plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
             @Override

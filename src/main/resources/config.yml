@@ -14,7 +14,9 @@ url: 'http://captcha.example.com/'
 
 # Configure the message the players get
 message:
-  - '&c&lSTOP'
+  - ' '
+  - '&4&lSTOP!'
+  - ' '
   - '&cBefore playing this server you need to'
   - '&ccomplete a captcha. Do so by going to'
   - ' '
@@ -23,7 +25,7 @@ message:
   - '&aOnce completed, you can begin playing!'
 
 # Configure a message delay (if you want to be sure its the last message people see in chat). In ticks (20 ticks = 1 second)
-message-delay: 20
+message-delay: 40
 
 # How often should the plugin cycle thru players pending validation? this means 1 mysql request per set time. In ticks (20 ticks = 1 second)
 validation-cycle-time: 60
